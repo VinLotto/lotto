@@ -1,13 +1,5 @@
 /* =========================================================
-   LottoVIN — Frontend (ethers v6, Viction)
-   - KHÔNG xử lý giá VIN (đã ở index_vin.html)
-   - Connect MetaMask, hiển thị VIC/VIN & Pool
-   - Đặt cược Lo (27 spins) / De (1 spin)
-   - Đọc minBet & constants từ HĐ; validate input
-   - Preflight thanh khoản theo công thức on-chain
-   - Tự approve allowance nếu thiếu
-   - Parse logs hiển thị kết quả
-   - Decode (tx hash / raw event data) như bản FROLL
+   
 ========================================================= */
 
 const CHAIN_ID_HEX = "0x58"; // 88
@@ -17,7 +9,7 @@ const EXPLORER     = "https://www.vicscan.xyz";
 const VIN_ADDR   = "0x941F63807401efCE8afe3C9d88d368bAA287Fac4";
 const LOTO_ADDR  = "0xD7747C14D450b47A5eFEE6d70Aa61EA7fDd11CdB";
 
-/* ===== ABI (đủ dùng, khớp LottoVIN & VIN) ===== */
+/* ===== ABI  ===== */
 const VIN_ABI = [
   "function decimals() view returns (uint8)",
   "function balanceOf(address) view returns (uint256)",
@@ -296,7 +288,7 @@ async function preflightLiquidity(stakes, betType){
   }
 }
 
-/* ===== Decode revert → thông điệp đẹp ===== */
+/* ===== Decode revert  ===== */
 function parseRevertMessage(e){
   try{
     const data = e?.data || e?.info?.error?.data || e?.error?.data;
@@ -347,7 +339,7 @@ async function placeBet(){
       ...(gasEst ? { gasLimit: (gasEst * 12n) / 10n } : {})
     });
 
-    // Hiển thị trạng thái cược
+    // 
     const pairs = numbers.map((n,i)=> `${String(n).padStart(2,"0")}: ${fmtNumber(fmtVIN(stakes[i]))} VIN`);
     $("#last-bet-numbers").textContent = pairs.join("; ");
     $("#last-bet-stake").textContent   = `${fmtNumber(fmtVIN(total))} VIN`;
@@ -356,7 +348,7 @@ async function placeBet(){
 
     const rc = await tx.wait();
 
-    // Parse logs → kết quả
+    // Parse logs 
     let win=false, resultText="";
     try{
       const iface = new ethers.Interface(LOTO_ABI);
@@ -492,7 +484,7 @@ async function decodeEventData(){
       return;
     }
 
-    // B) RAW HEX data của event
+    // B) RAW HEX data 
     if (!raw.startsWith("0x")) throw new Error("Please paste hex data starting with 0x, or a tx hash / link.");
     const coder = ethers.AbiCoder.defaultAbiCoder();
 
