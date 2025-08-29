@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LottoVIN — Fair & Instant</title>
+  <link rel="icon" type="image/png" href="logo64.png"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- ============== NAVBAR ============== -->
+  <header class="vx-nav">
+    <div class="vx-nav__left">
+      <img src="logo64.png" alt="VIN" class="vx-logo" />
+      <div class="vx-brand">LottoVIN — Fair & Instant</div>
+    </div>
+
+    <div class="vx-nav__right">
+      <span id="vin-price" class="price-chip">1 VIN = … USD</span>
+      <button id="connect-btn" class="vx-btn primary">Connect Wallet</button>
+    </div>
+
+    <div class="vx-nav__meta">
+      <span id="wallet-address" class="wallet-address"></span>
+    </div>
+  </header>
+
+  <!-- ============== MAIN CONTENT ============== -->
+  <main>
+    
+<section id="intro-lode-en" class="vx-info">
+  <h2>Welcome to LottoVIN</h2>
+  <p><strong>LottoVIN</strong> brings the Vietnamese Lo–De (00–99) game fully on-chain. Instant play, payouts in VIN, and transparent results.</p>
+
+  <h3>Quick Guide</h3>
+  <ol class="vx-steps">
+    <li>Open this site in the <strong>MetaMask in-app browser</strong> (mobile) or a desktop browser with MetaMask installed. <strong>Switch to the VIC network</strong>. Make sure you have <strong>VIC for gas</strong> and <strong>VIN for bets</strong>.</li>
+    <li>Select <strong>Lo</strong> (27 spins ×4 payout) or <strong>De</strong> (1 spin ×70 payout).</li>
+    <li>Enter your number(s) 00–99 and the stake in VIN. Use <strong>Add Row</strong> to place multiple bets.</li>
+    <li>Click <strong>Place Bet</strong> and sign in MetaMask. Results confirm on-chain right away.</li>
+    <li>To review a past bet, paste your <strong>transaction hash</strong> in the Decode box and press <strong>Decode</strong>.</li>
+  </ol>
+
+  <h3>Controls Explained</h3>
+  <ul class="vx-list">
+    <li><strong>Lo / De:</strong> choose your game type (radio buttons).</li>
+    <li><strong>Quick Pick:</strong> auto-suggests a set of “lucky” numbers (preview only).</li>
+    <li><strong>Add Row:</strong> add another line to bet different numbers/amounts.</li>
+    <li><strong>Clear / Remove:</strong> clear inputs in a row / remove the row (Remove is disabled when only one row remains).</li>
+    <li><strong>Repeat / Double / 1/2:</strong> reuse your last bet / double all stakes / halve all stakes.</li>
+  </ul>
+
+  <p class="muted">Play responsibly. Everything is on-chain and verifiable.</p>
+</section>
+
+    
+    <!-- Bet Type -->
+    <div class="bet-type">
+      <label><input type="radio" name="bet-type" value="lucky27" checked /> Lo</label>
+      <label><input type="radio" name="bet-type" value="matchup" /> De</label>
+    </div>
+
+    <!-- Lucky Picks -->
+    <section id="lucky-picks" class="vx-info">
+      <h2>Lucky Picks</h2>
+      <p class="muted">Auto-pick numbers. Enter how many you want and click Quick Pick.</p>
+      <div class="lucky-grid">
+        <div class="vx-input">
+          <label>How many numbers? (1–99)</label>
+          <input type="number" id="lucky-count" min="1" max="99" step="1" placeholder="e.g., 5"/>
+        </div>
+        <div class="row-buttons">
+          <button id="lucky-generate" class="vx-btn">Quick Pick</button>
+        </div>
+      </div>
+      <p id="lucky-preview" class="muted"></p>
+    </section>
+
+    <!-- Bet Controls -->
+    <div class="vx-info">
+      <div class="place-bet-buttons">
+        <button id="repeat-bet-btn" class="vx-btn">Repeat</button>
+        <button id="double-bet-btn" class="vx-btn">Double</button>
+        <button id="halve-bet-btn" class="vx-btn">1/2</button>
+      </div>
+    </div>
+
+    <!-- Bet Rows -->
+    <div id="bet-numbers-container">
+      <div class="bet-row" data-row="0">
+        <div class="vx-input">
+          <label>Choose Number</label>
+          <input type="text" class="numbers" placeholder="Enter number" maxlength="2"/>
+        </div>
+        <div class="vx-input">
+          <label>Stake (min 0.001 VIN)</label>
+          <input type="number" class="stakes" min="0.001" step="0.001" placeholder="0.001"/>
+        </div>
+        <div class="row-buttons">
+          <button class="vx-btn add-row-btn">Add Row</button>
+          <button class="vx-btn clear-btn">Clear</button>
+          <button class="vx-btn remove-row-btn" disabled>Remove</button>
+        </div>
+      </div>
+
+      <!-- Template -->
+      <template id="bet-row-template">
+        <div class="bet-row">
+          <div class="vx-input">
+            <label>Choose Number</label>
+            <input type="text" class="numbers" maxlength="2" placeholder="Enter number"/>
+          </div>
+          <div class="vx-input">
+            <label>Stake (VIN)</label>
+            <input type="number" class="stakes" min="0.001" step="0.001" placeholder="0.001"/>
+          </div>
+          <div class="row-buttons">
+            <button class="vx-btn add-row-btn">Add Row</button>
+            <button class="vx-btn clear-btn">Clear</button>
+            <button class="vx-btn remove-row-btn">Remove</button>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- Total & Place Bet -->
+    <div class="vx-info">
+      <div class="total-stake-container">
+        <p>Total Stake: <span id="total-stake">0</span> VIN</p>
+      </div>
+      <div class="place-bet-buttons">
+        <button id="place-bet-btn" class="vx-btn primary">Place Bet</button>
+      </div>
+    </div>
+
+    <!-- Bet Status -->
+    <section id="bet-status" class="vx-info">
+      <h2>Bet Status</h2>
+      <p id="status-msg">Waiting for your action...</p>
+      <div>
+        <h3>Your Bet</h3>
+        <p id="last-bet-numbers">No bet yet</p>
+        <p id="last-bet-stake">No stake yet</p>
+        <h3>Result</h3>
+        <p id="last-bet-result">No result yet</p>
+        <p id="last-win-status">No win/loss yet</p>
+      </div>
+    </section>
+
+    <!-- Wallet Balances -->
+    <section id="wallet-balances" class="vx-info balances-row">
+      <div class="balance-card">VIC: <span id="vic-balance">Loading...</span></div>
+      <div class="balance-card">VIN: <span id="vin-balance">Loading...</span></div>
+      <div class="balance-card">VIN Pool: <span id="vin-pool">Loading...</span></div>
+    </section>
+
+    <!-- Decode Event Data -->
+    <section id="decode-section" class="vx-info">
+      <h2>Decode Event Data</h2>
+      <p class="muted">Paste your transaction hash below and click Decode to view your bet.</p>
+      <textarea id="decode-input" class="decode-textarea" placeholder="0x..." rows="3"></textarea>
+      <div class="place-bet-buttons">
+        <button id="decode-btn" class="vx-btn primary">Decode</button>
+      </div>
+      <div id="decode-output" class="decode-output"></div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <ul class="footer-links">
+      <li><a href="https://vinplay.vin" target="_blank">Home</a></li>
+      <li><a href="https://t.me/VinEcosystem" target="_blank">Telegram</a></li>
+      <li><a href="https://x.com/VinEcosystem" target="_blank">X (Twitter)</a></li>
+      <li><a href="https://ipfs.io/ipfs/bafybeievvutakkkchayh4nwwvcrmu6ff4phhza5ma27rej7rqakhvvxdv4" target="_blank">Swap VIN/VIC</a></li>
+      <li><a href="https://www.vicscan.xyz/token/0x941F63807401efCE8afe3C9d88d368bAA287Fac4" target="_blank" rel="noopener">VIN token (VicScan)</a></li>
+    </ul>
+  </footer>
+
+  <!-- VIN price from Binance (VICUSDT ×100) -->
+  <script>
+    const BINANCE_API_URL = "https://api.binance.com/api/v3/ticker/price?symbol=VICUSDT";
+    async function updateVinPrice() {
+      try {
+        const response = await fetch(BINANCE_API_URL, { cache: "no-store" });
+        const data = await response.json();
+        const vinPrice = parseFloat(data.price) * 100;
+        document.getElementById("vin-price").textContent = `1 VIN = ${vinPrice.toFixed(2)} USD`;
+      } catch {
+        document.getElementById("vin-price").textContent = "Price unavailable";
+      }
+    }
+    document.addEventListener("DOMContentLoaded", updateVinPrice);
+    setInterval(updateVinPrice, 60000);
+  </script>
+
+  <!-- Ethers.js + App -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js" defer></script>
+  <script defer src="app.js"></script>
+</body>
+</html>
